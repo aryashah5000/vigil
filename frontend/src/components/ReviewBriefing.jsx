@@ -6,6 +6,7 @@ import {
   CheckCircle2, XCircle, RotateCcw, Video, Play, Zap
 } from 'lucide-react'
 import { useAttention } from '../hooks/useAttention'
+import AudioPlayer from './AudioPlayer'
 
 const API = '/api'
 
@@ -316,10 +317,11 @@ export default function ReviewBriefing({ briefing }) {
           </div>
 
           {briefing.structured?.summary && (
-            <div className="px-6 py-3 border-b border-hull-600/20 bg-hull-800/30">
-              <p className="text-sm text-gray-300 leading-relaxed">
+            <div className="px-6 py-3 border-b border-hull-600/20 bg-hull-800/30 flex items-start justify-between gap-3">
+              <p className="text-sm text-gray-300 leading-relaxed flex-1">
                 {briefing.structured.summary}
               </p>
+              <AudioPlayer text={briefing.structured.summary} className="shrink-0 mt-0.5" />
             </div>
           )}
 
@@ -477,6 +479,23 @@ export default function ReviewBriefing({ briefing }) {
                       <p className="text-sm text-amber-200/90">
                         {item.action_required}
                       </p>
+                    </div>
+                  )}
+
+                  {item.entities?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-4">
+                      {item.entities.map((ent, ei) => {
+                        const styles = {
+                          machine: 'bg-signal-blue/10 text-signal-blue border-signal-blue/20',
+                          part: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                          failure_mode: 'bg-signal-red/10 text-signal-red border-signal-red/20',
+                        }
+                        return (
+                          <span key={ei} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono border ${styles[ent.type] || styles.machine}`}>
+                            {ent.type === 'machine' ? '⚙' : ent.type === 'part' ? '🔧' : '⚠'} {ent.text}
+                          </span>
+                        )
+                      })}
                     </div>
                   )}
                 </div>

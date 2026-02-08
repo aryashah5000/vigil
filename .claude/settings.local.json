@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s \"C:\\\\Users\\\\aryas\\\\Downloads\\\\vigil\")",
+      "Bash(sqlite3:*)",
+      "Bash(pip install:*)",
+      "Bash(npm run build:*)",
+      "Bash(python -c:*)",
+      "Bash(npx tailwindcss --help:*)"
+    ]
+  }
+}

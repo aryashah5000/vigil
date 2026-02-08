@@ -2,8 +2,9 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import {
   AlertTriangle, Shield, Wrench, BarChart3,
-  Clock, ArrowRight, Activity, Users, Mic
+  Clock, ArrowRight, Activity, Users, Mic, Cpu, Cog, Flame
 } from 'lucide-react'
+import AudioPlayer from './AudioPlayer'
 
 const SEVERITY_CONFIG = {
   critical: { color: 'text-signal-red', bg: 'bg-signal-red/10', border: 'border-signal-red/30', dot: 'critical' },
@@ -26,11 +27,19 @@ export default function Dashboard({ briefings, onSelect }) {
   const warningCount = allItems.filter(i => i.severity === 'warning').length
   const machineCount = new Set(allItems.map(i => i.machine_id).filter(Boolean)).size
 
+  // Entity counts across all briefings
+  const allEntities = briefings.flatMap(b => {
+    const ent = b.structured?.entities || {}
+    return [...(ent.machines || []), ...(ent.parts || []), ...(ent.failure_modes || [])]
+  })
+  const uniqueParts = new Set(allEntities.filter(e => e.type === 'part').map(e => e.text)).size
+  const uniqueFailures = new Set(allEntities.filter(e => e.type === 'failure_mode').map(e => e.text)).size
+
   const stats = [
     { label: 'Total Briefings', value: briefings.length, icon: Clock, accent: 'text-signal-blue' },
     { label: 'Critical Items', value: criticalCount, icon: AlertTriangle, accent: 'text-signal-red' },
-    { label: 'Warnings', value: warningCount, icon: AlertTriangle, accent: 'text-amber-400' },
-    { label: 'Machines Tracked', value: machineCount, icon: Users, accent: 'text-signal-green' },
+    { label: 'Parts Tracked', value: uniqueParts, icon: Cog, accent: 'text-amber-400' },
+    { label: 'Failure Modes', value: uniqueFailures, icon: Flame, accent: 'text-signal-red' },
   ]
 
   const latestBriefing = briefings[0]
@@ -112,10 +121,11 @@ export default function Dashboard({ briefings, onSelect }) {
 
             {}
             {latestBriefing.structured?.summary && (
-              <div className="px-6 py-3 border-b border-hull-600/20 bg-hull-800/30">
-                <p className="text-sm text-gray-300 leading-relaxed">
+              <div className="px-6 py-3 border-b border-hull-600/20 bg-hull-800/30 flex items-start justify-between gap-3">
+                <p className="text-sm text-gray-300 leading-relaxed flex-1">
                   {latestBriefing.structured.summary}
                 </p>
+                <AudioPlayer text={latestBriefing.structured.summary} className="shrink-0 mt-0.5" />
               </div>
             )}
 

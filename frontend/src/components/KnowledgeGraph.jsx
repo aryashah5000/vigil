@@ -119,9 +119,23 @@ export default function KnowledgeGraph() {
                   <CatIcon className={`w-4 h-4 ${sev.text} shrink-0`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-200">{entry.description}</p>
-                    <p className="text-xs font-mono text-gray-500 mt-0.5">
-                      {entry.issue_type} · first seen {entry.first_seen ? new Date(entry.first_seen).toLocaleDateString() : 'today'}
-                    </p>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <p className="text-xs font-mono text-gray-500">
+                        {entry.issue_type} · first seen {entry.first_seen ? new Date(entry.first_seen).toLocaleDateString() : 'today'}
+                      </p>
+                      {entry.entity_tags?.length > 0 && entry.entity_tags.map((ent, ei) => {
+                        const styles = {
+                          machine: 'bg-signal-blue/10 text-signal-blue border-signal-blue/20',
+                          part: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                          failure_mode: 'bg-signal-red/10 text-signal-red border-signal-red/20',
+                        }
+                        return (
+                          <span key={ei} className={`inline-flex items-center px-1.5 py-0 rounded text-[9px] font-mono border ${styles[ent.type] || styles.machine}`}>
+                            {ent.text}
+                          </span>
+                        )
+                      })}
+                    </div>
                   </div>
                   {entry.occurrence_count > 1 && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20">
